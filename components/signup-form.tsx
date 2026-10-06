@@ -1,3 +1,6 @@
+"use client"
+
+import { useActionState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -13,8 +16,12 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { signupAction, SignupState } from "@/app/signup/actions"
+import { ErrorMessage } from "./error-message"
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
+  const [state, formAction] = useActionState<SignupState | null, FormData>(signupAction, null)
+
   return (
     <Card {...props}>
       <CardHeader>
@@ -24,28 +31,30 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form>
+        <form action={formAction}>
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="name">Full Name</FieldLabel>
-              <Input id="name" type="text" placeholder="John Doe" required />
+              <Input id="name" type="text" name="name" placeholder="John Doe" required />
             </Field>
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
               <Input
                 id="email"
                 type="email"
+                name="email"
                 placeholder="m@example.com"
                 required
               />
             </Field>
             <Field>
               <FieldLabel htmlFor="password">Password</FieldLabel>
-              <Input id="password" type="password" required />
+              <Input id="password" type="password" name="password" required />
               <FieldDescription>
                 Must be at least 8 characters long.
               </FieldDescription>
             </Field>
+            {state?.error && <ErrorMessage message={state.error}/>}
             <FieldGroup>
               <Field>
                 <Button type="submit">Create Account</Button>
